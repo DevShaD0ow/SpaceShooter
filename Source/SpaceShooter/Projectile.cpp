@@ -1,6 +1,7 @@
 #include "Projectile.h"
 #include "Components/StaticMeshComponent.h"
 
+// cette ligne est pas inutile serieux
 AProjectile::AProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
