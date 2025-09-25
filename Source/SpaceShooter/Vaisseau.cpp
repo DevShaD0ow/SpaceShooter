@@ -7,6 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "SpaceShooterGameMode.h"
 
+// conflit main
+
 AVaisseau::AVaisseau()
 {
 	PrimaryActorTick.bCanEverTick = true;
