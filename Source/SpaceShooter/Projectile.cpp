@@ -1,6 +1,8 @@
 #include "Projectile.h"
 #include "Components/StaticMeshComponent.h"
 
+// ajout de cette ligne inutile pour le conflit =)
+
 AProjectile::AProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
