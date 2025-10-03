@@ -25,7 +25,7 @@ public:
 	class UStaticMeshComponent* VaisseauMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float MoveSpeed = 1000.0f;
+	float MoveSpeed = 4000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	TSubclassOf<class AProjectile> ProjectileClass;
@@ -55,6 +55,6 @@ private:
 
 	bool bIsInvincible = false;
 	FTimerHandle InvincibilityTimerHandle;
-	float InvincibilityDuration = 0.5f; 
+	float InvincibilityDuration = 1.f; 
 	void ResetInvincibility();
 };

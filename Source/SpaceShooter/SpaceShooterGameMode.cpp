@@ -5,8 +5,13 @@
 ASpaceShooterGameMode::ASpaceShooterGameMode()
 {
 	PlayerScore = 0;
-	PointsForLife = { 30, 45, 70}; 
+	PointsForLife = { 30, 45, 70 };
 	BasePoints = 10;
+}
+
+void ASpaceShooterGameMode::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void ASpaceShooterGameMode::AddScore(int32 Points)
@@ -17,11 +22,14 @@ void ASpaceShooterGameMode::AddScore(int32 Points)
 
 int32 ASpaceShooterGameMode::GetPointsForLife(int32 Life) const
 {
-	if (Life <= 0) return 0;
+	if (Life <= 0) 
+		return 0;
+
 	int32 Index = Life - 1;
 	if (PointsForLife.IsValidIndex(Index))
 		return PointsForLife[Index];
-	return BasePoints * Life; // fallback
+
+	return BasePoints * Life; 
 }
 
 void ASpaceShooterGameMode::GameOver()
@@ -30,7 +38,7 @@ void ASpaceShooterGameMode::GameOver()
 	if (PC && GameOverWidgetClass)
 	{
 		UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(PC, GameOverWidgetClass);
-		if (GameOverWidget)
+		if (GameOverWidget)    
 		{
 			GameOverWidget->AddToViewport();
 

@@ -7,38 +7,42 @@
 UCLASS()
 class SPACESHOOTER_API ASpaceShooterGameMode : public AGameModeBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	ASpaceShooterGameMode();
+    ASpaceShooterGameMode();
 
-	// Score global du joueur
-	UPROPERTY(BlueprintReadOnly, Category="Score")
-	int32 PlayerScore;
+protected:
+    virtual void BeginPlay() override; 
 
-	// Tableau éditable depuis l’éditeur :
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Score")
-	TArray<int32> PointsForLife;
+public:
+    // Score global du joueur
+    UPROPERTY(BlueprintReadOnly, Category="Score")
+    int32 PlayerScore;
 
-	// Valeur par défaut si PointsForLife n’a pas assez d’entrées
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Score")
-	int32 BasePoints = 10;
+    // Tableau éditable depuis l’éditeur
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Score")
+    TArray<int32> PointsForLife;
 
-	// Ajouter des points
-	UFUNCTION(BlueprintCallable, Category="Score")
-	void AddScore(int32 Points);
+    // Valeur par défaut si PointsForLife n’a pas assez d’entrées
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Score")
+    int32 BasePoints = 10;
 
-	UFUNCTION(BlueprintCallable, Category="Score")
-	int32 GetScore() const { return PlayerScore; }
+    // Ajouter des points
+    UFUNCTION(BlueprintCallable, Category="Score")
+    void AddScore(int32 Points);
 
-	// Récupérer le nombre de points pour une astéroïde en fonction de sa vie initiale
-	UFUNCTION(BlueprintCallable, Category="Score")
-	int32 GetPointsForLife(int32 Life) const;
+    UFUNCTION(BlueprintCallable, Category="Score")
+    int32 GetScore() const { return PlayerScore; }
 
-	// --- Game Over ---
-	UFUNCTION(BlueprintCallable, Category="Game")
-	void GameOver();
+    // Récupérer le nombre de points pour une astéroïde en fonction de sa vie initiale
+    UFUNCTION(BlueprintCallable, Category="Score")
+    int32 GetPointsForLife(int32 Life) const;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
-	TSubclassOf<class UUserWidget> GameOverWidgetClass;
+    // --- Game Over ---
+    UFUNCTION(BlueprintCallable, Category="Game")
+    void GameOver();
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
+    TSubclassOf<class UUserWidget> GameOverWidgetClass;
 };

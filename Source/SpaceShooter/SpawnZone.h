@@ -31,7 +31,7 @@ public:
 
 	// Nombre d’astéroïdes au départ
 	UPROPERTY(EditAnywhere, Category="Spawn")
-	int32 NumberOfAsteroids = 5;
+	int32 NumberOfAsteroids = 12;
 
 	// Spawn initial
 	void SpawnAsteroids();
@@ -41,4 +41,9 @@ public:
 
 	// Position aléatoire dans le volume
 	FVector GetRandomPointInVolume() const;
+
+	UFUNCTION()
+	void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 };

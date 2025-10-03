@@ -1,0 +1,4 @@
+P4PORT=ssl:perforce.uqac.ca:1666
+P4USER=atirant
+P4CLIENT=alexis_dev
+P4IGNORE=.p4ignore.txt;.gitignore

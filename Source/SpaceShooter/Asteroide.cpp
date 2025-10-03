@@ -28,7 +28,7 @@ AAsteroide::AAsteroide()
 	AsteroideMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 	AsteroideMesh->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 
-	// Box Collider pour gérer les overlaps
+	// Box Collider
 	BoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
 	BoxCollider->SetupAttachment(RootComponent);
 	BoxCollider->SetBoxExtent(FVector(50.f));
@@ -51,10 +51,14 @@ void AAsteroide::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Direction aléatoire
-	Direction = FMath::VRand().GetSafeNormal();
-
-	// Rotation aléatoire sur Z
+	// Récupère le vaisseau
+	AVaisseau* Vaisseau = Cast<AVaisseau>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	if (Vaisseau)
+	{
+		FVector DirectionToVaisseau = (Vaisseau->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		Direction = DirectionToVaisseau;
+	}
+	else Direction = FMath::VRand().GetSafeNormal();
 	RotationSpeed = FRotator(0.f, FMath::FRandRange(-45.f, 45.f), 0.f);
 
 	// Taille aléatoire
@@ -62,20 +66,27 @@ void AAsteroide::BeginPlay()
 	SetActorScale3D(FVector(RandomScale));
 }
 
+
 void AAsteroide::Tick(float DeltaTime) 
 {
 	Super::Tick(DeltaTime);
 
-	// Déplacement
+	AVaisseau* Vaisseau = Cast<AVaisseau>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	if (Vaisseau)
+	{
+		Direction = (Vaisseau->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	}
+
+	// Déplacement vers la cible
 	FVector Location = GetActorLocation();
-	Location.X += Direction.X * Speed * DeltaTime;
-	Location.Y += Direction.Y * Speed * DeltaTime;
+	Location += Direction * Speed * DeltaTime;
 	SetActorLocation(Location);
 
-	// Rotation Z
+
 	FRotator NewRotation = FRotator(0.f, RotationSpeed.Yaw * DeltaTime, 0.f);
 	AddActorLocalRotation(NewRotation);
 }
+
 
 void AAsteroide::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
@@ -88,7 +99,24 @@ void AAsteroide::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 		if (Projectile)
 		{
 			vie--;
+			if (ImpactFX)
+			{
+				FVector ImpactLocation = GetActorLocation();
+				if (SweepResult.bBlockingHit)
+				{
+					ImpactLocation = FVector(SweepResult.ImpactPoint);
+				}
 
+				UGameplayStatics::SpawnEmitterAtLocation(
+					GetWorld(),
+					ImpactFX,
+					ImpactLocation,
+					SweepResult.ImpactNormal.Rotation(),
+					FVector(3.0f),
+					true
+				);
+			}
+			// Vérif destruction
 			if (vie <= 0)
 			{
 				if (ASpaceShooterGameMode* GM = Cast<ASpaceShooterGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
@@ -97,42 +125,42 @@ void AAsteroide::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 					GM->AddScore(PointsToAdd);
 				}
 
-				UE_LOG(LogTemp, Warning, TEXT("Astéroïde détruit par projectile"));
+				if (ExplosionFx)
+				{
+					FRotator ImpactRotation = SweepResult.ImpactNormal.Rotation();
+					ImpactRotation.Pitch += 90.0f;
 
-				// ✅ Respawn via la zone
+					UGameplayStatics::SpawnEmitterAtLocation(
+						GetWorld(),
+						ExplosionFx,
+						GetActorLocation(),
+						ImpactRotation,
+						FVector(3.0f),
+						true
+					);
+
+				}
+				Destroy();
 				if (OwnerSpawnZone)
 				{
 					OwnerSpawnZone->RespawnAsteroid();
 				}
-
-				Projectile->Destroy();
-				Destroy();
 			}
-			else
-			{
-				if (ExplosionFX)
-				{
-					FRotator ExplosionRotation = GetActorRotation();
-					ExplosionRotation.Yaw += 90.f;
 
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-						GetWorld(),
-						ExplosionFX,
-						GetActorLocation(),
-						ExplosionRotation,
-						FVector(7.f)
-					);
-				}
-				Projectile->Destroy();
-			}
+			Projectile->Destroy();
 		}
 
 		// Vaisseau
 		AVaisseau* Vaisseau = Cast<AVaisseau>(OtherActor);
 		if (Vaisseau)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Astéroïde a touché le VAISSEAU"));
 			Vaisseau->PerdreVie();
+			Destroy();
 		}
 	}
+}
+
+void AAsteroide::DestroyAsteroide()
+{
+	Destroy();
 }

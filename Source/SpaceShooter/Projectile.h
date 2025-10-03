@@ -25,4 +25,8 @@ public:
 	// Vitesse
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 	float Speed = 2000.0f;
+
+	// Son joué au tir
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Audio")
+	class USoundBase* FireSound;
 };

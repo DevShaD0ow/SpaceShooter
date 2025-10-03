@@ -33,8 +33,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 	FRotator RotationSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite ,Category="Explosion")
-	UNiagaraSystem* ExplosionFX; 
+	UPROPERTY(EditAnywhere, Category = "Effets")
+	UParticleSystem* ExplosionFx;
+	UPROPERTY(EditAnywhere, Category = "Effets")
+	UParticleSystem* ImpactFX;
 
 	UPROPERTY(VisibleAnywhere)
 	class UBoxComponent* BoxCollider;
@@ -43,8 +45,8 @@ public:
 	void OnOverlap(UPrimitiveComponent* OverlappedComp,AActor* OtherActor,
 				   UPrimitiveComponent* OtherComp,int32 OtherBodyIndex,
 				   bool bFromSweep,const FHitResult& SweepResult);
+	void DestroyAsteroide();
 
-	// ✅ Référence vers la zone qui a spawn cet astéroïde
 	UPROPERTY()
 	ASpawnZone* OwnerSpawnZone;
 
